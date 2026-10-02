@@ -1,7 +1,3 @@
 node_modules/
 dist/
 packages/*/dist/
-packages/*/src/*.d.ts
-packages/*/src/*.d.ts.map
-packages/*/src/*.js
-packages/*/src/*.js.map

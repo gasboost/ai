@@ -1,0 +1,49 @@
+{
+  "name": "@gasboost/agent",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gasboost/ai.git",
+    "directory": "packages/agent"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@gasboost/tool": "workspace:*"
+  },
+  "devDependencies": {
+    "@gasboost/gemini": "^0.1.0",
+    "@gasboost/openai": "^0.1.0",
+    "@types/google-apps-script": "^2.0.13"
+  },
+  "peerDependencies": {
+    "@gasboost/gemini": "^0.1.0",
+    "@gasboost/openai": "^0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@gasboost/gemini": {
+      "optional": true
+    },
+    "@gasboost/openai": {
+      "optional": true
+    }
+  }
+}

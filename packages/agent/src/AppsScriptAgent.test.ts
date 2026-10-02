@@ -1,3 +1,4 @@
+import type { OpenAIResponse, OpenAIResponseApi } from "@gasboost/openai";
 import { toolDefine } from "@gasboost/tool";
 import { describe, expect, it, vi } from "vitest";
 import { AppsScriptAgent } from "./AppsScriptAgent";
@@ -8,7 +9,7 @@ import {
 } from "./errors";
 
 type FakeResponses = {
-  create: ReturnType<typeof vi.fn<(request: Record<string, unknown>) => unknown>>;
+  create: ReturnType<typeof vi.fn<OpenAIResponseApi["create"]>>;
 };
 
 const parameters = {
@@ -20,7 +21,10 @@ const parameters = {
   additionalProperties: false,
 } as const;
 
-function createOpenAIResponse(id: string, output: unknown[]) {
+function createOpenAIResponse(
+  id: string,
+  output: OpenAIResponse["output"],
+): OpenAIResponse {
   return {
     id,
     object: "response",

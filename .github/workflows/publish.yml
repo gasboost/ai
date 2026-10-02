@@ -1,0 +1,53 @@
+name: Publish
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm pack:smoke
+      - name: Publish unpublished versions in dependency order
+        run: |
+          set -eu
+          for package in tool agent; do
+            name=$(node -p "require('./packages/$package/package.json').name")
+            version=$(node -p "require('./packages/$package/package.json').version")
+            npm_view_output=$(mktemp)
+            if npm view "$name@$version" version >"$npm_view_output" 2>&1; then
+              echo "$name@$version is already published"
+            elif grep -q 'E404' "$npm_view_output"; then
+              pnpm --filter "$name" publish --access public --no-git-checks
+            else
+              cat "$npm_view_output"
+              exit 1
+            fi
+          done

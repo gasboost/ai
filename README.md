@@ -119,3 +119,19 @@ The agent loop:
 5. Repeats until final text output or `maxSteps`.
 
 Provider-specific response IDs are returned as opaque `continuationId` values. The agent does not create a session database.
+
+## Development And Publishing
+
+The repository installs independently with `pnpm install --frozen-lockfile`.
+Provider development dependencies come from npm; no sibling repositories are required.
+Run `pnpm typecheck`, `pnpm test`, and `pnpm pack:smoke` before publishing.
+The smoke check builds and packs both packages, installs the tarballs into an isolated
+consumer, executes a tool-call round trip, and checks both provider clients against
+the published declaration files without workspace path aliases.
+
+CI runs those checks for pull requests and pushes to `main`. After successful `main`
+push CI, Publish checks npm versions and publishes missing versions in dependency
+order (`tool`, then `agent`) using npm Trusted Publishing.
+Publish both initial `0.1.0` releases locally in that same order, then configure each
+npm package's GitHub Trusted Publisher for `gasboost/ai` and `publish.yml`.
+Subsequent releases require updating the package versions in a pull request.

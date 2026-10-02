@@ -13,6 +13,11 @@
     "dist",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gasboost/ai.git",
+    "directory": "packages/agent"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -25,8 +30,8 @@
     "@gasboost/tool": "workspace:*"
   },
   "devDependencies": {
-    "@gasboost/gemini": "file:../../../api/packages/gemini",
-    "@gasboost/openai": "file:../../../api/packages/openai",
+    "@gasboost/gemini": "^0.1.0",
+    "@gasboost/openai": "^0.1.0",
     "@types/google-apps-script": "^2.0.13"
   },
   "peerDependencies": {

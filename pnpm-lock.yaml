@@ -22,11 +22,11 @@ importers:
         version: link:../tool
     devDependencies:
       '@gasboost/gemini':
-        specifier: file:../../../api/packages/gemini
-        version: file:../api/packages/gemini
+        specifier: ^0.1.0
+        version: 0.1.0
       '@gasboost/openai':
-        specifier: file:../../../api/packages/openai
-        version: file:../api/packages/openai
+        specifier: ^0.1.0
+        version: 0.1.0
       '@types/google-apps-script':
         specifier: ^2.0.13
         version: 2.0.13
@@ -35,11 +35,11 @@ importers:
 
 packages:
 
-  '@gasboost/gemini@file:../api/packages/gemini':
-    resolution: {directory: ../api/packages/gemini, type: directory}
+  '@gasboost/gemini@0.1.0':
+    resolution: {integrity: sha512-9vCRVH6jHDKfk83xn0mPDD7F9m5QLKK0TwXg8LxMr6J8s/4ECxQL7RXvknTsPFc0TxY2XDVI4d74prC2qguZag==}
 
-  '@gasboost/openai@file:../api/packages/openai':
-    resolution: {directory: ../api/packages/openai, type: directory}
+  '@gasboost/openai@0.1.0':
+    resolution: {integrity: sha512-1k7JV0gnR5PVwlfzfIWmbi2zER4rdCKXz2RjO+UUS7DKVyTS+7iHry+OWFCyz3JmDD8UXPLMDU/Ahqqc6gof9Q==}
 
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
@@ -542,9 +542,9 @@ packages:
 
 snapshots:
 
-  '@gasboost/gemini@file:../api/packages/gemini': {}
+  '@gasboost/gemini@0.1.0': {}
 
-  '@gasboost/openai@file:../api/packages/openai': {}
+  '@gasboost/openai@0.1.0': {}
 
   '@jridgewell/resolve-uri@3.1.2': {}
 

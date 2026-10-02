@@ -1,27 +1,20 @@
+import type {
+  CreateGeminiInteractionRequest,
+  GeminiInteractionApi,
+  GeminiInteractionModel,
+} from "@gasboost/gemini";
+import type {
+  CreateOpenAIResponseRequest,
+  OpenAIResponseApi,
+  OpenAIResponseModel,
+} from "@gasboost/openai";
 import type { MaterializedToolSet, ToolSet } from "@gasboost/tool";
 
 export type AgentProvider = "gemini" | "openai";
 
-export type GeminiAgentModel =
-  | (string & {})
-  | "gemini-3.8-flash"
-  | "gemini-3.5-flash-lite"
-  | "gemini-3-flash-preview"
-  | "gemini-3-pro-preview"
-  | "gemini-2.5-flash"
-  | "gemini-2.5-flash-lite"
-  | "gemini-2.5-pro";
+export type GeminiAgentModel = GeminiInteractionModel;
 
-export type OpenAIAgentModel =
-  | (string & {})
-  | "gpt-5"
-  | "gpt-5-mini"
-  | "gpt-5-nano"
-  | "gpt-4.1"
-  | "gpt-4.1-mini"
-  | "gpt-4.1-nano"
-  | "gpt-4o"
-  | "gpt-4o-mini";
+export type OpenAIAgentModel = OpenAIResponseModel;
 
 export type AgentToolCall = {
   callId: string;
@@ -76,25 +69,21 @@ export type AgentAdapter = {
 
 export type GeminiAgentConfig = {
   provider: "gemini";
-  interactions: {
-    create(request: unknown): unknown;
-  };
+  interactions: Pick<GeminiInteractionApi, "create">;
   model: GeminiAgentModel;
   systemInstruction?: string;
-  generationConfig?: Record<string, unknown>;
+  generationConfig?: CreateGeminiInteractionRequest["generation_config"];
   store?: boolean;
 };
 
 export type OpenAIAgentConfig = {
   provider: "openai";
-  responses: {
-    create(request: unknown): unknown;
-  };
+  responses: Pick<OpenAIResponseApi, "create">;
   model: OpenAIAgentModel;
   instructions?: string;
-  reasoning?: Record<string, unknown>;
-  text?: Record<string, unknown>;
-  truncation?: "auto" | "disabled";
+  reasoning?: CreateOpenAIResponseRequest["reasoning"];
+  text?: CreateOpenAIResponseRequest["text"];
+  truncation?: CreateOpenAIResponseRequest["truncation"];
   temperature?: number;
   topP?: number;
   maxOutputTokens?: number;

@@ -5,7 +5,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "pack:smoke": "pnpm build && node scripts/pack-smoke.mjs"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

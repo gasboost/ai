@@ -1,3 +1,4 @@
+import type { OpenAIResponse } from "@gasboost/openai";
 import { toolDefine, type MaterializedToolSet } from "@gasboost/tool";
 import { describe, expect, it, vi } from "vitest";
 import { OpenAIAgentAdapter, toOpenAITools } from "./OpenAIAgentAdapter";
@@ -18,7 +19,7 @@ const tools = toolDefine({
   },
 }) as MaterializedToolSet;
 
-function response(id: string, output: unknown[]) {
+function response(id: string, output: OpenAIResponse["output"]): OpenAIResponse {
   return {
     id,
     object: "response",

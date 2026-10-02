@@ -1,3 +1,4 @@
+import type { GeminiInteraction } from "@gasboost/gemini";
 import { toolDefine, type MaterializedToolSet } from "@gasboost/tool";
 import { describe, expect, it, vi } from "vitest";
 import { GeminiAgentAdapter, toGeminiTools } from "./GeminiAgentAdapter";
@@ -18,7 +19,10 @@ const tools = toolDefine({
   },
 }) as MaterializedToolSet;
 
-function interaction(id: string, steps: unknown[]) {
+function interaction(
+  id: string,
+  steps: GeminiInteraction["steps"],
+): GeminiInteraction {
   return {
     id,
     object: "interaction",

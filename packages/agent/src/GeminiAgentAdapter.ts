@@ -1,3 +1,10 @@
+import type {
+  CreateGeminiInteractionRequest,
+  GeminiInteraction,
+  GeminiInteractionFunctionCallStep,
+  GeminiInteractionModelOutputStep,
+  GeminiInteractionFunctionTool,
+} from "@gasboost/gemini";
 import type { MaterializedToolSet } from "@gasboost/tool";
 import { ProviderResponseError } from "./errors";
 import { serializeToolResult } from "./serialization";
@@ -8,51 +15,6 @@ import type {
   AgentTurn,
   GeminiAgentConfig,
 } from "./types";
-
-type CreateGeminiInteractionRequest = {
-  model?: string;
-  input: string | GeminiInteractionStep[];
-  previous_interaction_id?: string;
-  tools?: ReturnType<typeof toGeminiTools>;
-  system_instruction?: string;
-  generation_config?: Record<string, unknown>;
-  store?: boolean;
-};
-
-type GeminiInteraction = {
-  id: string;
-  steps?: GeminiInteractionStep[];
-};
-
-type GeminiInteractionStep =
-  | GeminiInteractionFunctionCallStep
-  | GeminiInteractionModelOutputStep
-  | {
-      type: string;
-      [key: string]: unknown;
-    };
-
-type GeminiInteractionFunctionCallStep = {
-  type: "function_call";
-  id?: string;
-  name?: string;
-  arguments?: Record<string, unknown>;
-};
-
-type GeminiInteractionModelOutputStep = {
-  type: "model_output";
-  content?: GeminiInteractionContent[];
-};
-
-type GeminiInteractionContent =
-  | {
-      type: "text";
-      text: string;
-    }
-  | {
-      type: string;
-      [key: string]: unknown;
-    };
 
 export class GeminiAgentAdapter implements AgentAdapter {
   constructor(private readonly config: GeminiAgentConfig) {}
@@ -100,9 +62,7 @@ export class GeminiAgentAdapter implements AgentAdapter {
     );
   }
 
-  private toTurn(response: unknown): AgentTurn {
-    const interaction = response as GeminiInteraction;
-
+  private toTurn(interaction: GeminiInteraction): AgentTurn {
     if (!interaction.id) {
       throw new ProviderResponseError("Gemini interaction is missing id.");
     }
@@ -122,12 +82,15 @@ export class GeminiAgentAdapter implements AgentAdapter {
   }
 }
 
-export function toGeminiTools(tools: MaterializedToolSet) {
+export function toGeminiTools(
+  tools: MaterializedToolSet,
+): GeminiInteractionFunctionTool[] {
   return Object.entries(tools).map(([name, tool]) => ({
     type: "function" as const,
     name,
     description: tool.description,
-    parameters: tool.parameters,
+    // Provider DTOs require mutable arrays; serialize the readonly tool schema.
+    parameters: JSON.parse(JSON.stringify(tool.parameters)),
   }));
 }
 

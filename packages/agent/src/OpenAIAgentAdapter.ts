@@ -1,3 +1,10 @@
+import type {
+  CreateOpenAIResponseRequest,
+  OpenAIResponse,
+  OpenAIResponseFunctionCall,
+  OpenAIResponseOutputMessage,
+  OpenAIResponseFunctionTool,
+} from "@gasboost/openai";
 import type { MaterializedToolSet } from "@gasboost/tool";
 import { ProviderResponseError } from "./errors";
 import { isRecord, serializeToolResult } from "./serialization";
@@ -8,62 +15,6 @@ import type {
   AgentTurn,
   OpenAIAgentConfig,
 } from "./types";
-
-type CreateOpenAIResponseRequest = {
-  model: string;
-  input: string | OpenAIResponseInputItem[];
-  previous_response_id?: string;
-  tools?: ReturnType<typeof toOpenAITools>;
-  instructions?: string;
-  reasoning?: Record<string, unknown>;
-  text?: Record<string, unknown>;
-  truncation?: "auto" | "disabled";
-  temperature?: number;
-  top_p?: number;
-  max_output_tokens?: number;
-  store?: boolean;
-};
-
-type OpenAIResponseInputItem = {
-  type: "function_call_output";
-  call_id: string;
-  output: string;
-};
-
-type OpenAIResponse = {
-  id: string;
-  output?: OpenAIResponseOutputItem[];
-};
-
-type OpenAIResponseOutputItem =
-  | OpenAIResponseOutputMessage
-  | OpenAIResponseFunctionCall
-  | {
-      type: string;
-      [key: string]: unknown;
-    };
-
-type OpenAIResponseFunctionCall = {
-  type: "function_call";
-  call_id: string;
-  name: string;
-  arguments: string;
-};
-
-type OpenAIResponseOutputMessage = {
-  type: "message";
-  content: OpenAIResponseOutputContent[];
-};
-
-type OpenAIResponseOutputContent =
-  | {
-      type: "output_text";
-      text: string;
-    }
-  | {
-      type: string;
-      [key: string]: unknown;
-    };
 
 export class OpenAIAgentAdapter implements AgentAdapter {
   constructor(private readonly config: OpenAIAgentConfig) {}
@@ -120,9 +71,7 @@ export class OpenAIAgentAdapter implements AgentAdapter {
     );
   }
 
-  private toTurn(response: unknown): AgentTurn {
-    const openaiResponse = response as OpenAIResponse;
-
+  private toTurn(openaiResponse: OpenAIResponse): AgentTurn {
     if (!openaiResponse.id) {
       throw new ProviderResponseError("OpenAI response is missing id.");
     }
@@ -142,12 +91,16 @@ export class OpenAIAgentAdapter implements AgentAdapter {
   }
 }
 
-export function toOpenAITools(tools: MaterializedToolSet, strict?: boolean) {
+export function toOpenAITools(
+  tools: MaterializedToolSet,
+  strict?: boolean,
+): OpenAIResponseFunctionTool[] {
   return Object.entries(tools).map(([name, tool]) => ({
     type: "function" as const,
     name,
     description: tool.description,
-    parameters: tool.parameters,
+    // Provider DTOs require mutable arrays; serialize the readonly tool schema.
+    parameters: JSON.parse(JSON.stringify(tool.parameters)),
     strict,
   }));
 }
